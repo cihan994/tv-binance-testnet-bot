@@ -5,13 +5,16 @@ import crypto from "crypto";
 const app = express();
 app.use(express.json());
 
+// Çevre değişkenleri (Render Environment Variables'tan geliyor)
 const BINANCE_KEY = process.env.BINANCE_KEY;
 const BINANCE_SECRET = process.env.BINANCE_SECRET;
 
+// HEALTH CHECK için GET /
 app.get("/", (req, res) => {
-  res.send("Binance Testnet webhook endpoint ayakta.");
+  res.status(200).send("Binance Testnet webhook endpoint ayakta.");
 });
 
+// TradingView webhook endpoint
 app.post("/webhook", async (req, res) => {
   try {
     const body = req.body;
@@ -27,7 +30,7 @@ app.post("/webhook", async (req, res) => {
 
     const params = new URLSearchParams({
       symbol,
-      side,
+      side: side.toUpperCase(),
       type,
       quantity: quantity.toString(),
       timestamp,
@@ -65,7 +68,9 @@ app.post("/webhook", async (req, res) => {
   }
 });
 
+// Render'da PORT env var'ını mutlaka kullan
 const port = process.env.PORT || 10000;
-app.listen(port, () => {
-  console.log("Server ayakta, port:", port);
+
+app.listen(port, "0.0.0.0", () => {
+  console.log("Sunucu ayakta, port:", port);
 });
